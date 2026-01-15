@@ -1,7 +1,7 @@
 // src/utils/driveService.js
 
 // 1. PUT YOUR NEW API KEY HERE
-const API_KEY = process.env.REACT_APP_GOOGLE_DRIVE_API_KEY; // Paste your key from Google Cloud here
+const API_KEY =  "AIzaSyC5SXaWNPEks3aRe6JVqAZZnOiE1DgKUpM" // Paste your key from Google Cloud here
 
 // --- THE SUPER CLEANER ---
 const extractDriveId = (input) => {

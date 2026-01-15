@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDL5BHGDZa6mHJbRuXIWphe7tvfvCaMd_g",
+  apiKey: "AIzaSyC5SXaWNPEks3aRe6JVqAZZnOiE1DgKUpM",
   authDomain: "khushi-photography.firebaseapp.com",
   projectId: "khushi-photography",
   storageBucket: "khushi-photography.firebasestorage.app",
