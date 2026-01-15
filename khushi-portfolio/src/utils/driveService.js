@@ -1,7 +1,7 @@
 // src/utils/driveService.js
 
-// 1. PUT YOUR NEW API KEY HERE
-const API_KEY =  "AIzaSyC5SXaWNPEks3aRe6JVqAZZnOiE1DgKUpM" // Paste your key from Google Cloud here
+// 1. Get API Key from Environment Variables
+const API_KEY = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
 
 // --- THE SUPER CLEANER ---
 const extractDriveId = (input) => {
@@ -11,14 +11,13 @@ const extractDriveId = (input) => {
   // 1. Remove any surrounding quotes or whitespace
   let clean = input.trim().replace(/^["']|["']$/g, '');
 
-  // 2. Try to find the ID inside a URL (matches between 'folders/' and '?')
+  // 2. Try to find the ID inside a URL
   const urlMatch = clean.match(/\/folders\/([a-zA-Z0-9_-]+)/);
   if (urlMatch && urlMatch[1]) {
       return urlMatch[1];
   }
 
   // 3. If it looks like a URL but no '/folders/', maybe it's just the ID?
-  // IDs are usually long alphanumeric strings (approx 33 chars)
   if (clean.length > 20 && !clean.includes('http')) {
       return clean;
   }
@@ -29,7 +28,6 @@ const extractDriveId = (input) => {
 export const fetchPhotosFromDrive = async (rawInput) => {
   const folderId = extractDriveId(rawInput);
   
-  // Safety Check: If ID is still empty or looks like a URL, stop.
   if (!folderId || folderId.includes('http')) {
       console.warn("Invalid Folder ID:", folderId);
       return [];
@@ -50,7 +48,6 @@ export const fetchPhotosFromDrive = async (rawInput) => {
       return data.files.map(file => ({
             id: file.id,
             name: file.name,
-            // Force high-res image
             url: file.thumbnailLink ? file.thumbnailLink.replace('=s220', '=s1600') : file.webContentLink
       }));
     }

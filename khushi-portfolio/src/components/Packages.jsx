@@ -1,10 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; 
-import { Check, X } from "lucide-react"; 
+import { Check, X, MessageCircle } from "lucide-react"; 
 import '../styles/global.css';
 
 const Packages = () => {
-  const navigate = useNavigate();
 
   const allFeatures = [
     { label: "Candid Photography", id: "candid" },
@@ -49,21 +47,43 @@ const Packages = () => {
         raw: false
       }
     },
+    {
+        name: "Elite",
+        price: "₹85k",
+        desc: "The complete royal treatment.",
+        isFeatured: false,
+        isPopular: false,
+        features: {
+          candid: true,
+          trad_vid: true,
+          cinematic: true,
+          drone: true,
+          album: "Luxury (80 Sheets)",
+          reels: true,
+          raw: true
+        }
+    }
   ];
 
   const handleBookNow = (packageName) => {
-    navigate(`/booking?plan=${encodeURIComponent(packageName)}`);
+    // 1. Define your phone number (Include Country Code, e.g., 91 for India)
+    const phoneNumber = "917507620937"; 
+    
+    // 2. Create the message
+    const message = `Hello Khushi Cinematic Team! 👋\n\nI am interested in booking the *${packageName} Package*. \n\nCould you please share availability and more details?`;
+    
+    // 3. Create the WhatsApp URL
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // 4. Open in new tab
+    window.open(url, '_blank');
   };
 
   return (
-    <section className="packages-wrap" id="packages">
-      {/* REMOVED 'reveal' class so it is visible immediately */}
-      <h2 className="section-title" style={{ marginTop: "1rem", color: "white" }}>
-        Our Packages
-      </h2>
+    <div className="max-w-wrapper">
+      <h2 className="section-title reveal">Our Packages</h2>
       
-      {/* REMOVED 'reveal' class here too */}
-      <div className="pricing-scroller">
+      <div className="pricing-scroller reveal">
         
         {packages.map((pkg, index) => (
           <div 
@@ -103,17 +123,18 @@ const Packages = () => {
 
             <button 
               className="form-btn" 
-              style={{ width: '100%' }}
+              style={{ width: '100%', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px' }}
               onClick={() => handleBookNow(pkg.name)}
             >
-              Book Now
+              <MessageCircle size={18} /> Book via WhatsApp
             </button>
           </div>
         ))}
 
+        {/* Spacer for scroll */}
         <div style={{ minWidth: "20px" }}></div>
       </div>
-    </section>
+    </div>
   );
 };
 

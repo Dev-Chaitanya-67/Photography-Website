@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { X, Menu } from "lucide-react";
+import { X, Menu, User } from "lucide-react"; // Added User Icon
 import "../styles/global.css";
 
 const Navbar = ({ toggleLogin, user, onLogout }) => {
@@ -10,7 +10,7 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
 
   const toggleMenu = () => setMenuOpen(!isMenuOpen);
 
-  // FIXED: Simplified Active Check
+  // Simplified Active Check
   const isActive = (path) => location.pathname === path;
 
   // LOGIC: Handle "My Gallery" click
@@ -19,7 +19,6 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
       e.preventDefault(); // Stop navigation
       toggleLogin(); // Open Login Modal instead
     }
-    // If user exists, let the <Link> work naturally
   };
 
   const handleLogoutClick = () => {
@@ -36,6 +35,14 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
         </Link>
 
         <div className="nav-links">
+          {/* HOME */}  
+          <Link
+            to="/"
+            className={`nav-link ${isActive("/") ? "active" : ""}`}
+          >
+            Home
+          </Link>
+
           {/* COLLECTIONS */}
           <Link
             to="/collections"
@@ -79,10 +86,15 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
             </button>
           )}
 
-          {/* USER WELCOME (Only if logged in) */}
+          {/* USER ICON (Only if logged in) - REPLACED TEXT WITH ICON */}
           {user && (
-            <Link to="/profile" className="nav-profile-link">
-               Hi, {user.name ? user.name.split(" ")[0] : "User"}
+            <Link 
+              to="/profile" 
+              className="nav-profile-link" 
+              title="My Profile"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+               <User size={24} color="var(--accent)" />
             </Link>
           )}
 
@@ -119,6 +131,15 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
             className={isActive("/packages") ? "active-link" : ""}
         >
           Our Packages
+        </Link>
+
+        {/* Added Artist Link to Mobile Menu as well */}
+        <Link
+            to="/about"
+            className={isActive("/about") ? "active-link" : ""}
+            onClick={toggleMenu}
+        >
+            The Artist
         </Link>
 
         {/* Mobile Gallery Link */}

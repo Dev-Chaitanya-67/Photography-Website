@@ -1,23 +1,27 @@
 import React, { useEffect } from 'react';
-import Portfolio from '../components/Portfolio'; // Import the new section
-import '../styles/global.css';
+import { Link } from 'react-router-dom'; // <--- Import Link
+import Portfolio from '../components/Portfolio'; 
 import Packages from '../components/Packages';
+import ClientCTA from '../components/ClientCTA'; 
+import '../styles/global.css';
 
-const Home = () => {
-  // Animation Logic for Hero Header
+const Home = ({ toggleLogin }) => {
+  
+  // Optimized Scroll Animation (IntersectionObserver)
+  // This fixes the lag you were feeling earlier
   useEffect(() => {
-    const handleScroll = () => {
-      const reveals = document.querySelectorAll('.reveal');
-      for (let i = 0; i < reveals.length; i++) {
-        const windowHeight = window.innerHeight;
-        const revealTop = reveals[i].getBoundingClientRect().top;
-        if (revealTop < windowHeight - 60) {
-          reveals[i].classList.add('active');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
         }
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+      });
+    }, { threshold: 0.1 });
+
+    const reveals = document.querySelectorAll('.reveal');
+    reveals.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
   }, []);
 
   const imgError = (e) => {
@@ -26,7 +30,6 @@ const Home = () => {
 
   return (
     <>
-      {/* HERO SECTION */}
       <header className="hero" id="hero">
         <div className="hero-content reveal">
           <img src="/logo.jpg" alt="Khushi Logo" className="hero-logo-large" onError={imgError} />
@@ -36,9 +39,50 @@ const Home = () => {
         </div>
       </header>
 
-      {/* NEW PORTFOLIO SECTION */}
       <Portfolio />
-      <Packages />
+      
+      <ClientCTA toggleLogin={toggleLogin} /> 
+
+      <section className="packages-wrap" id="packages">
+        <Packages />
+      </section>
+      
+
+      {/* NEW: SIMPLE ABOUT SECTION (No Image BG) */}
+      <section className="reveal" style={{ 
+          padding: '5rem 1.5rem', 
+          textAlign: 'center', 
+          background: '#0a0a0a', /* Subtle dark grey difference from footer */
+          borderTop: '1px solid var(--border)' 
+      }}>
+          <h2 style={{ 
+              fontFamily: 'var(--font-head)', 
+              color: 'white', 
+              fontSize: '2rem', 
+              marginBottom: '1rem' 
+          }}>
+            About Us
+          </h2>
+          
+          <p style={{ 
+              color: '#888', 
+              maxWidth: '600px', 
+              margin: '0 auto 2.5rem', 
+              fontSize: '0.95rem' 
+          }}>
+            Get to know the passionate team dedicated to preserving your legacy with royal elegance.
+          </p>
+
+          <Link to="/about" className="form-btn" style={{ 
+              display: 'inline-block', 
+              width: 'auto', 
+              padding: '12px 40px', 
+              textDecoration: 'none' 
+          }}>
+             Know more
+          </Link>
+      </section>
+
     </>
   );
 };
