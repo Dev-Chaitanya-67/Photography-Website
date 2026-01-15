@@ -117,13 +117,7 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
         >
           Our Collections
         </Link>
-        <Link 
-            to="/packages" 
-            onClick={toggleMenu}
-            className={isActive("/packages") ? "active-link" : ""}
-        >
-          Our Packages
-        </Link>
+        
 
         {/* Added Artist Link to Mobile Menu as well */}
         <Link
