@@ -55,7 +55,6 @@ function App() {
         <Route path="/" element={<Home toggleLogin={() => setLoginOpen(true)} />} />
         
         <Route path="/collections" element={<Collections />} />
-        <Route path="/packages" element={<PackagesPage />} />
         <Route path="/about" element={<div className="pt-20 bg-[#050505] min-h-screen"><About /></div>} />
         <Route path="/dashboard" element={<ClientDashboard />} />
         <Route path="/admin" element={<AdminPanel />} />

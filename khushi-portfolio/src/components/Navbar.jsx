@@ -51,14 +51,6 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
             Our Collections
           </Link>
 
-          {/* PACKAGES */}
-          <Link
-            to="/packages"
-            className={`nav-link ${isActive("/packages") ? "active" : ""}`}
-          >
-            Our Packages
-          </Link>
-
           {/* ARTIST (ABOUT) */}
           <Link
             to="/about"
