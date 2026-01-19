@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, Calendar, LogOut, Camera, Edit2, Save } from 'lucide-react';
 import '../styles/global.css';
 import { updateUserField } from '../firebase/services'; // <--- Connect to Firebase
+import Breadcrumb from '../components/ui/Breadcrumb';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -19,9 +20,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     const sessionData = localStorage.getItem('currentUser');
-    if (!sessionData) {
-      navigate('/');
-    } else {
+    if (sessionData) {
       const userData = JSON.parse(sessionData);
       setUser(userData);
       setFormData({
@@ -68,6 +67,8 @@ const UserProfile = () => {
     <div className="page-container" style={{paddingTop:'100px', minHeight:'100vh'}}>
       <div className="max-w-wrapper">
         
+        <Breadcrumb pageName="My Profile" />
+
         {/* PROFILE HEADER CARD */}
         <div className="profile-header-card">
         

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { X, Menu, User } from "lucide-react"; // Added User Icon
-import "../styles/global.css";
+import "../../styles/global.css";
 
 const Navbar = ({ toggleLogin, user, onLogout }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -57,6 +57,15 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
             className={`nav-link ${isActive("/about") ? "active" : ""}`}
           >
             The Artist
+          </Link>
+
+          {/* CONTACT */}
+          <Link
+            to="/contact"
+            className={`nav-link ${isActive("/contact") ? "active" : ""}`}
+            style={{ marginRight: '1rem' }} 
+          >
+            Contact
           </Link>
 
           {/* MY GALLERY */}

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Loader2, Lock, User, Eye, EyeOff, ArrowLeft, Mail } from 'lucide-react';
-import '../styles/global.css';
-import { loginUser, registerUser, resetUserPassword } from '../firebase/services';
+import '../../styles/global.css';
+import { loginUser, registerUser, resetUserPassword } from '../../firebase/services';
 
 // ADD 'onLoginSuccess' HERE
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import '../styles/global.css';
+import '../../styles/global.css';
 
 const Breadcrumb = ({ pageName }) => {
   return (

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPortfolioCategories } from '../utils/driveService'; 
-import { Loader2, X, ChevronRight } from 'lucide-react';
+import { Loader2, X, ChevronRight, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../styles/global.css';
+import Lightbox from '../components/ui/Lightbox';
+import LazyImage from '../components/ui/LazyImage';
 
 // YOUR MASTER PORTFOLIO ID
 const MASTER_PORTFOLIO_ID = "1TYj8bo0O2poMLzcXzz-h7FRbty-8qobJ"; 
@@ -11,7 +13,8 @@ const Collections = () => {
   const [categories, setCategories] = useState([]);
   const [activeTab, setActiveTab] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [selectedImg, setSelectedImg] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -20,7 +23,21 @@ const Collections = () => {
       setLoading(false);
     };
     loadData();
+
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const getDisplayPhotos = () => {
     if (activeTab === 'All') {
@@ -84,23 +101,35 @@ const Collections = () => {
                             <div 
                                 key={photo.id || index} 
                                 className="collection-card" 
-                                onClick={() => setSelectedImg(photo.url)}
+                                onClick={() => setLightboxIndex(index)}
                             >
-                                <img src={photo.url} alt="Portfolio" loading="lazy" />
+                                <LazyImage src={photo.url} alt="Portfolio" className="w-full h-full object-cover" />
                             </div>
                         ))
                     )}
                 </div>
             </>
         )}
+
+      {/* SCROLL TO TOP BUTTON */}
+      <button 
+        className={`scroll-top-btn ${showScrollTop ? 'visible' : ''}`} 
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp size={24} />
+      </button>
+
       </div>
 
-      {/* LIGHTBOX */}
-      {selectedImg && (
-        <div className="lightbox" onClick={() => setSelectedImg(null)}>
-            <button className="close-lightbox"><X size={30} /></button>
-            <img src={selectedImg} alt="Full View" onClick={(e) => e.stopPropagation()} />
-        </div>
+      {/* LIGHTBOX COMPONENT */}
+      {lightboxIndex >= 0 && (
+        <Lightbox 
+            images={displayPhotos}
+            currentIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(-1)}
+            onIndexChange={setLightboxIndex}
+        />
       )}
     </section>
   );

@@ -1,18 +1,19 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import About from "./components/About";
+import Navbar from "./components/layout/Navbar";
+import About from "./pages/About"; 
+import Contact from "./pages/Contact";
 import Collections from "./pages/Collections"; 
 import Home from "./pages/Home";
 import ClientDashboard from "./pages/ClientDashboard"; 
-import LoginModal from "./components/LoginModal"; 
+import LoginModal from "./components/ui/LoginModal"; 
 import "./styles/global.css";
 import AdminPanel from './pages/AdminPanel';
-// import Booking from './pages/Booking'; <--- REMOVED
 import UserProfile from './pages/UserProfile';
-import Footer from "./components/Footer";
+import Footer from "./components/layout/Footer";
 import PackagesPage from "./pages/PackagesPage";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -56,10 +57,16 @@ function App() {
         
         <Route path="/collections" element={<Collections />} />
         <Route path="/about" element={<div className="pt-20 bg-[#050505] min-h-screen"><About /></div>} />
-        <Route path="/dashboard" element={<ClientDashboard />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/packages" element={<PackagesPage />} />
+        
+        {/* Protected Client Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<ClientDashboard />} />
+          <Route path="/profile" element={<UserProfile />} />
+        </Route>
+
         <Route path="/admin" element={<AdminPanel />} />
-        {/* <Route path="/booking" element={<Booking />} />  <--- REMOVED */}
-        <Route path="/profile" element={<UserProfile />} />
       </Routes>
 
       <Footer/>

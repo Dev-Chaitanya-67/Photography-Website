@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import CategoryCard from "./CategoryCard";
-import '../styles/global.css';
-import { fetchPortfolioCategories } from "../utils/driveService"; // <--- Import Drive Service
+import CategoryCard from "../ui/CategoryCard";
+import '../../styles/global.css';
+import { fetchPortfolioCategories } from "../../utils/driveService"; // <--- Import Drive Service
 import { Loader2 } from "lucide-react";
 
 // YOUR MASTER FOLDER ID (Same as Collections Page)

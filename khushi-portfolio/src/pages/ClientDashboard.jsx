@@ -1,9 +1,12 @@
+/* eslint-disable react-hooks/immutability */
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Download, Share2, ChevronRight, ImageOff, Loader2, X } from 'lucide-react'; // Added X for close button
+import { Download, Share2, ChevronRight, ImageOff, Loader2, X, Heart, Save } from 'lucide-react'; // Added Heart, Save
 import '../styles/global.css';
 import { fetchPhotosFromDrive } from '../utils/driveService';
 import { downloadSingleImage, downloadAllImages } from '../utils/downloadHelper';
+import { saveUserFavorites } from '../firebase/services'; // Value added: Save to DB
+import LazyImage from '../components/ui/LazyImage'; // <--- Import LazyImage
 
 const DashboardBreadcrumb = () => (
   <div className="breadcrumb" style={{marginTop: '20px'}}>
@@ -20,21 +23,65 @@ const ClientDashboard = () => {
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [isZipping, setIsZipping] = useState(false);
   
-  // NEW: State for Lightbox
-  const [selectedImg, setSelectedImg] = useState(null);
+  // NEW: Favorites Logic
+  const [favorites, setFavorites] = useState(new Set()); 
+  const [isSavingFavs, setIsSavingFavs] = useState(false);
+
+  // NEW: State for Lightbox (Index based)
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
 
   useEffect(() => {
     const sessionData = localStorage.getItem('currentUser');
-    if (!sessionData) {
-      navigate('/'); 
-    } else {
+    if (sessionData) {
       const userData = JSON.parse(sessionData);
       setUser(userData);
+      // Load initial favorites if they exist
+      if (userData.favorites && Array.isArray(userData.favorites)) {
+          setFavorites(new Set(userData.favorites));
+      }
       if (userData.hasBooking && userData.folderId) {
           loadRealPhotos(userData.folderId);
       }
     }
-  }, [navigate]);
+  }, []);
+
+  const removeFav = (photoName) => {
+    setFavorites(prev => {
+        const next = new Set(prev);
+        next.delete(photoName);
+        return next;
+    });
+  };
+
+  const toggleFavorite = (e, photoName) => {
+      e.stopPropagation();
+      setFavorites(prev => {
+          const next = new Set(prev);
+          if (next.has(photoName)) {
+              next.delete(photoName);
+          } else {
+              next.add(photoName);
+          }
+          return next;
+      });
+  };
+
+  const handleSaveFavorites = async () => {
+      setIsSavingFavs(true);
+      const favArray = Array.from(favorites);
+      const result = await saveUserFavorites(user.uid, favArray);
+      
+      if(result.success) {
+          // Update local storage to keep session fresh
+          const updatedUser = { ...user, favorites: favArray };
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser)); // Persist locally
+          setUser(updatedUser);
+          alert("Selections saved successfully! We have received your list.");
+      } else {
+          alert("Failed to save selections. Please try again.");
+      }
+      setIsSavingFavs(false);
+  };
 
   const loadRealPhotos = async (folderId) => {
       setLoadingPhotos(true);
@@ -90,48 +137,81 @@ const ClientDashboard = () => {
                       <div>
                         <h1 className="event-title">{user.eventName || "Your Event"}</h1>
                         <div className="event-meta">
-                           <span>{user.name}</span><span style={{opacity:0.3}}>|</span><span>{photos.length} Items</span>
+                           <span>{user.name}</span>
+                           <span style={{opacity:0.3}}>|</span>
+                           <span>{photos.length} Items</span>
+                           {favorites.size > 0 && (
+                             <>
+                               <span style={{opacity:0.3}}>|</span>
+                               <span style={{color: 'var(--accent)'}}>{favorites.size} Selected</span>
+                             </>
+                           )}
                         </div>
                       </div>
                       
-                      <button 
-                        className="download-all-btn" 
-                        onClick={handleDownloadAll}
-                        disabled={isZipping}
-                        style={{opacity: isZipping ? 0.7 : 1, cursor: isZipping ? 'wait' : 'pointer'}}
-                      >
-                        {isZipping ? (
-                             <><Loader2 size={18} className="spinner" /> Zipping Original Files...</>
-                        ) : (
-                             <><Download size={18} /> Download All Photos</>
-                        )}
-                      </button>
+                      <div className="flex gap-3">
+                        <button 
+                            className="download-all-btn" 
+                            style={{backgroundColor: '#222', borderColor:'#444'}}
+                            onClick={handleSaveFavorites}
+                            disabled={isSavingFavs}
+                        >
+                            {isSavingFavs ? <Loader2 size={18} className="spinner" /> : <Save size={18} />}
+                            <span className="hidden sm:inline">Save Selection</span>
+                        </button>
+
+                        <button 
+                            className="download-all-btn" 
+                            onClick={handleDownloadAll}
+                            disabled={isZipping}
+                            style={{opacity: isZipping ? 0.7 : 1, cursor: isZipping ? 'wait' : 'pointer'}}
+                        >
+                            {isZipping ? (
+                                <><Loader2 size={18} className="spinner" /> Zipping...</>
+                            ) : (
+                                <><Download size={18} /> Download All</>
+                            )}
+                        </button>
+                      </div>
                     </div>
 
                     <div className="my-photos-grid">
-                      {photos.map((photo, idx) => (
+                      {photos.map((photo, idx) => {
+                        const isFav = favorites.has(photo.name);
+                        return (
                         <div 
                             key={photo.id || idx} 
-                            className="photo-card group"
-                            // NEW: Click to open Lightbox
-                            onClick={() => setSelectedImg(photo.url)}
+                            className={`photo-card group ${isFav ? 'ring-2 ring-[var(--accent)]' : ''}`}
+                            onClick={() => setLightboxIndex(idx)}
                         >
-                          <img src={photo.url} alt={photo.name} loading="lazy" />
+                          <LazyImage 
+                            src={photo.url} 
+                            alt={photo.name} 
+                            className="w-full h-full object-cover" 
+                          />
                           
                           <div className="photo-actions">
-                             
+                             {/* FAVORITE ACTION */}
+                             <button
+                                className={`action-icon-btn ${isFav ? 'bg-[var(--accent)] text-white border-none' : ''}`}
+                                onClick={(e) => toggleFavorite(e, photo.name)}
+                                title={isFav ? "Unfavorite" : "Add to Favorites"}
+                             >
+                                <Heart size={14} fill={isFav ? "white" : "none"} />
+                             </button>
+
                              <button 
                                 className="action-icon-btn" 
                                 // UPDATED: Passed 'e' to stop propagation
                                 onClick={(e) => handleSingleDownload(e, photo.url, photo.name)}
-                                title={photo.name}
+                                title="Download"
                              >
                               {/* // setting bg of download icon to white for better visibility */}
                                 <Download size={14} />
                              </button>
                           </div>
                         </div>
-                      ))}
+                      )})}
                     </div>
                   </>
                 ) : (
@@ -169,11 +249,13 @@ const ClientDashboard = () => {
       </div>
 
       {/* NEW: LIGHTBOX COMPONENT */}
-      {selectedImg && (
-        <div className="lightbox" onClick={() => setSelectedImg(null)}>
-            <button className="close-lightbox"><X size={30} /></button>
-            <img src={selectedImg} alt="Full View" onClick={(e) => e.stopPropagation()} />
-        </div>
+      {lightboxIndex >= 0 && (
+        <Lightbox 
+            images={photos}
+            currentIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(-1)}
+            onIndexChange={setLightboxIndex}
+        />
       )}
 
     </div>

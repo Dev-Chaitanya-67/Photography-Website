@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom'; // <--- Import Link
-import Portfolio from '../components/Portfolio'; 
-import Packages from '../components/Packages';
-import ClientCTA from '../components/ClientCTA'; 
+import Portfolio from '../components/sections/Portfolio'; 
+import Packages from '../components/sections/Packages';
+import ClientCTA from '../components/sections/ClientCTA'; 
 import '../styles/global.css';
 
 const Home = ({ toggleLogin }) => {

@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import '../styles/global.css';
+import '../../styles/global.css';
+import LazyImage from './LazyImage';
 
 const CategoryCard = ({ title, subtitle, image, delay }) => {
-  const imgError = (e) => {
-  };
 
   return (
     <article 
@@ -14,7 +13,11 @@ const CategoryCard = ({ title, subtitle, image, delay }) => {
     >
       {/* 1. The Wrapper */}
       <div className="card-img-wrap">
-        <img src={image} alt={title} onError={imgError} />
+        <LazyImage 
+          src={image} 
+          alt={title} 
+          className="w-full h-full"
+        />
         
         {/* 2. The Overlay */}
         <div className="view-more-overlay">
