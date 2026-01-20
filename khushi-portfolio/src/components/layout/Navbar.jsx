@@ -137,6 +137,15 @@ const Navbar = ({ toggleLogin, user, onLogout }) => {
             The Artist
         </Link>
 
+        {/* Added Contact Link to Mobile Menu */}
+        <Link
+            to="/contact"
+            className={isActive("/contact") ? "active-link" : ""}
+            onClick={toggleMenu}
+        >
+            Contact
+        </Link>
+
         {/* Mobile Gallery Link */}
         <Link
           to="/dashboard"
